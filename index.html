@@ -2,12 +2,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ekip Takip Pro (V48 - Modüler)</title>
+    <title>Ekip Takip Pro (V47 - Geri Bildirim)</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4facfe">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="Ekip Takip">
+	<meta name="apple-mobile-web-app-title" content="Ekip Takip">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -15,44 +15,53 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
     <style>
+        /* MEVCUT TASARIM KORUNDU */
         :root { --primary-grad: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --bg-color: #f3f5f9; --text-main: #2d3436; --nav-height: 75px; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); margin: 0; padding: 0; padding-bottom: 120px; color: var(--text-main); }
+
         .hidden { display: none !important; } 
         .admin-only { display: none; } 
         .view-section { display: none; animation: fadeIn 0.3s; } 
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: none; padding: 15px 20px; border-radius: 10px; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideInRight 0.3s; }
         @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
         .toast-success { background: #27ae60; }
         .toast-error { background: #e74c3c; }
+
         .app-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .header-icons { display: flex; align-items: center; gap: 10px; position: relative; }
         .icon-btn { width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; font-size: 1.2rem; position: relative; }
         .notif-badge { position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 0.7rem; display: none; justify-content: center; align-items: center; border: 2px solid white; }
+
         .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 600px; background: white; height: var(--nav-height); border-radius: 25px; display: flex; align-items: center; box-shadow: 0 15px 35px rgba(0,0,0,0.15); z-index: 1000; overflow-x: auto; padding: 0 10px; gap: 15px; -ms-overflow-style: none; scrollbar-width: none; white-space: nowrap; cursor: grab; user-select: none; }
         .bottom-nav:active { cursor: grabbing; }
         .bottom-nav::-webkit-scrollbar { display: none; }
         .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; color: #b2bec3; min-width: 60px; cursor: pointer; transition: 0.3s; flex-shrink: 0; }
         .nav-item .icon { font-size: 1.5rem; margin-bottom: 2px; pointer-events: none; }
         .nav-item.active { color: #764ba2; transform: translateY(-3px); font-weight: 600; }
+
         #notification-dropdown { position: absolute; top: 60px; right: 0; width: 300px; background: white; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 2500; display: none; overflow: hidden; border: 1px solid #eee; }
         .notif-header { background: #f8f9fa; padding: 10px 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
         .notif-list { max-height: 300px; overflow-y: auto; }
         .notif-item { padding: 10px 15px; border-bottom: 1px solid #f0f0f0; font-size: 0.85rem; }
         .notif-empty { padding: 20px; text-align: center; color: #aaa; font-size: 0.9rem; }
+
         .container { max-width: 1100px; margin: 0 auto; padding: 0 15px; }
         .modern-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 15px; }
         .hero-card { background: var(--primary-grad); border-radius: 25px; padding: 25px; color: white; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(118, 75, 162, 0.3); }
         .hero-stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; text-align: center; }
         .hero-stat-item span { font-size: 1.8rem; font-weight: 700; display: block; }
+
         .search-bar { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid #eee; background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23ccc" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>') no-repeat right 15px center; margin-bottom: 15px; font-size: 0.9rem; }
         .info-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .info-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
         .info-card.active { border-left-color: #27ae60; } .info-card.busy { border-left-color: #e74c3c; } .info-card.custody { border-left-color: #f39c12; }
         .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
         .badge-green { background: #d1fae5; color: #065f46; } .badge-red { background: #fee2e2; color: #991b1b; } .badge-orange { background: #ffedd5; color: #9a3412; } .badge-gray { background: #f3f4f6; color: #374151; }
+        
         .calendar-nav-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
         .day-head { text-align: center; font-size: 0.8rem; color: #888; margin-bottom: 5px; }
@@ -60,29 +69,35 @@
         .day-cell b { align-self: center; margin-bottom: 4px; color: #333; }
         .day-cell.today { border: 2px solid #764ba2; background: white; }
         .task-dot { font-size: 0.6rem; background: #e0e7ff; color: #4338ca; padding: 2px 4px; margin-bottom: 2px; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #eee; background: #f9f9f9; border-radius: 10px; margin-bottom: 10px; font-size: 16px; outline: none; }
-        textarea { width: 100%; padding: 12px; border: 1px solid #eee; background: #f9f9f9; border-radius: 10px; outline: none; margin-bottom: 10px; min-height: 100px; resize: vertical; }
+
+        input, select { width: 100%; padding: 12px; border: 1px solid #eee; background: #f9f9f9; border-radius: 10px; margin-bottom: 10px; font-size: 16px; outline: none; textarea { width: 100%; padding: 12px; border: 1px solid #eee; background: #f9f9f9; border-radius: 10px; outline: none; margin-bottom: 10px; min-height: 100px; resize: vertical; } }
         .btn-main { width: 100%; padding: 12px; background: var(--primary-grad); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; margin-bottom: 5px; transition: opacity 0.3s; }
         .btn-main:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-sm { padding: 5px 10px; font-size: 0.8rem; border-radius: 6px; border: none; cursor: pointer; margin-left: 5px; }
         .filter-btn { padding: 8px 15px; border: 1px solid #eee; border-radius: 20px; background: #fff; cursor: pointer; font-size: 0.8rem; }
         .filter-btn.active { background: var(--primary-grad); color: white; border: none; }
+        
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: none; justify-content: center; align-items: end; }
         .modal-card { background: white; width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; padding: 25px; max-height: 85vh; overflow-y: auto; }
         #month-picker-modal { display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); width: 300px; background: white; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 500; padding: 15px; }
         .year-selector { display: flex; justify-content: space-between; margin-bottom: 15px; }
         .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .month-btn { padding: 10px; background: #f9f9f9; text-align: center; cursor: pointer; border-radius: 5px; font-size: 0.8rem; }
+        
         .multi-select-area { background: #f9f9f9; border: 1px solid #eee; border-radius: 10px; padding: 10px; max-height: 150px; overflow-y: auto; margin-bottom: 10px; }
         .ms-item { display: flex; align-items: center; margin-bottom: 8px; } .ms-item input { width: 20px; margin: 0 10px 0 0; }
         .log-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         .log-table th { text-align: left; padding: 10px; background: #f4f6f8; }
         .log-table td { padding: 10px; border-bottom: 1px solid #eee; }
+        
         .avatar { width: 40px; height: 40px; background: #eee; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #555; margin-right:10px;}
         .person-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0; }
+
         .leave-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 8px 0; font-size: 0.9rem; }
         .report-controls { display: flex; gap: 5px; margin-bottom: 15px; background: #f8f9fa; padding: 10px; border-radius: 10px; }
         .report-controls select { margin-bottom: 0; font-size: 0.8rem; padding: 8px; }
+        
+        /* FEEDBACK CARD STIL */
         .feedback-item { background: #fff; border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 8px; font-size: 0.85rem; }
         .feedback-item strong { color: #764ba2; }
         .feedback-date { float: right; color: #aaa; font-size: 0.75rem; }
@@ -97,10 +112,15 @@
         <div><small style="color:#888;">Merhaba,</small><h2 style="margin:0;" id="welcomeUser">Kullanıcı</h2></div>
         
         <div class="header-icons">
-            <button class="icon-btn" onclick="openFeedbackModal()" title="Geri Bildirim Yap">💬</button>
-            <button class="icon-btn" onclick="toggleNotifications()">
-                🔔 <span id="notif-badge" class="notif-badge">0</span>
+            <button class="icon-btn" onclick="openFeedbackModal()" title="Geri Bildirim Yap">
+                💬
             </button>
+
+            <button class="icon-btn" onclick="toggleNotifications()">
+                🔔
+                <span id="notif-badge" class="notif-badge">0</span>
+            </button>
+            
             <button class="icon-btn" onclick="handleLogout()">🚪</button>
             
             <div id="notification-dropdown">
@@ -108,7 +128,9 @@
                     <span>Bildirimler</span>
                     <button onclick="clearAllNotifications()" style="background:none; border:none; color:#e74c3c; font-size:0.7rem; cursor:pointer;">Temizle</button>
                 </div>
-                <div id="notif-list" class="notif-list"><div class="notif-empty">Bildirim yok.</div></div>
+                <div id="notif-list" class="notif-list">
+                    <div class="notif-empty">Bildirim yok.</div>
+                </div>
             </div>
         </div>
     </div>
@@ -192,8 +214,10 @@
                 <input type="text" id="d-name" placeholder="Cihaz Adı">
                 <input type="text" id="d-serial" placeholder="Seri No">
                 <label>Kalibrasyon Tarihi:</label><input type="date" id="d-calib">
+                
                 <label style="margin-top:10px; display:block; font-size:0.8rem;">Kalibrasyon Dosyası (PDF):</label>
                 <input type="file" id="d-file" accept="application/pdf" style="background:white; margin-top:5px;">
+                
                 <div style="display:flex; gap:5px; margin-top:10px;">
                     <button class="btn-main" id="btn-d-save" onclick="addDevice()">Ekle</button>
                     <button class="btn-main" id="btn-d-update" onclick="updateDeviceDB()" style="background:#f39c12; display:none;">Güncelle</button>
@@ -252,6 +276,7 @@
                     <p style="color:#aaa; text-align:center;">Yükleniyor...</p>
                 </div>
             </div>
+
             <div class="modern-card">
                 <h3>Sistem Kayıtları (Log)</h3>
                 <label>Tarih Seç:</label>
@@ -289,6 +314,7 @@
                     <p style="text-align:center; color:#888;">Yükleniyor...</p>
                 </div>
             </div>
+
             <div class="modern-card">
                 <h3>İzin Talep Oluştur</h3>
                 <div style="display:flex; gap:10px;">
@@ -307,9 +333,12 @@
                     <option value="Babalık İzni">Babalık İzni</option>
                 </select>
                 <input type="text" id="l-desc" placeholder="Açıklama (Opsiyonel)">
+                
                 <div style="background:#fff3cd; padding:10px; border-radius:8px; margin-bottom:10px; display:none; color:#856404;" id="leaveCalcInfo"></div>
+                
                 <button class="btn-main" onclick="saveLeaveRequest()">Talep Oluştur</button>
             </div>
+
             <div class="modern-card">
                 <h3>İzin Geçmişi</h3>
                 <div id="leaveListArea"></div>
@@ -363,19 +392,23 @@
     <div class="modal-card">
         <div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h2>Görevler</h2><span onclick="closeModal()" style="font-size:1.5rem; cursor:pointer;">✕</span></div>
         <p id="modalDateText" style="margin-bottom:10px; font-weight:bold; color:#764ba2;"></p>
+        
         <div id="dayTaskList" style="margin-bottom:20px;"></div>
+        
         <div class="admin-only">
             <h3 id="taskFormTitle">Yeni Atama</h3>
             <div style="display:flex; gap:10px;">
                 <div style="flex:1;"><label>Başlangıç</label><input type="date" id="t-start-date"></div>
                 <div style="flex:1;"><label>Bitiş</label><input type="date" id="t-end-date"></div>
             </div>
+
             <label>Personel</label><div class="multi-select-area" id="ms-person"></div>
             <label>Proje</label><select id="t-project-select"></select>
             <input type="text" id="t-loc" placeholder="Konum">
             <label>Araçlar</label><div class="multi-select-area" id="ms-plate"></div>
             <label>Cihazlar</label><div class="multi-select-area" id="ms-device"></div>
             <div id="conflictWarning" style="color:red; font-size:0.8rem; margin:10px 0;"></div>
+            
             <button class="btn-main" id="btn-save-task" onclick="saveTask()">Kaydet</button>
             <button class="btn-main" id="btn-cancel-task" onclick="cancelTaskEdit()" style="background:#95a5a6; display:none; margin-top:5px;">Vazgeç</button>
         </div>
@@ -398,7 +431,7 @@
     import { getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy, setDoc, getDoc, limit, where, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-    // Firebase Ayarları
+    // --- FIREBASE AYARLARI ---
     const k1 = "AIzaSyD4XZR8JAMe-"; const k2 = "Qr2Oj2UGnp9mFc8En38gxY";
     const firebaseConfig = {
       apiKey: k1 + k2,
@@ -410,37 +443,52 @@
       measurementId: "G-S6Q0H5RHR7"
     };
 
-    // Firebase Başlatma ve Window'a Aktarma
-    // (Böylece diğer script etiketleri bunlara erişebilir)
     const app = initializeApp(firebaseConfig);
-    window.auth = getAuth(app);
-    window.db = getFirestore(app);
-    window.storage = getStorage(app); 
-    
-    // Firestore Fonksiyonlarını da dışa açıyoruz (Diğer scriptlerde kullanmak için)
-    window.fs = { collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy, setDoc, getDoc, limit, where, writeBatch };
-    window.fbStorage = { ref, uploadBytes, getDownloadURL };
-    window.fbAuth = { signOut, updatePassword, onAuthStateChanged };
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app); 
 
-    // Global Değişkenler
-    window.globalState = {
-        projects: [], tasks: [], users: [], vehicles: [], devices: [], logs: [], notifications: [], leaves: [],
-        currentUser: null, userRole: 'staff',
-        currentDate: new Date(),
-        selectedDateStr: null,
-        pickerYear: new Date().getFullYear(),
-        editingUserEmail: null, editingVehicleId: null, editingDeviceId: null, editingProjectId: null, editingTaskId: null,
-        custodyTargetId: null, custodyType: null,
-        currentReportFilter: 'all',
-        currentReportDate: new Date().toISOString().slice(0, 7)
-    };
-    
-    // Yardımcı Tarih Fonksiyonu
-    window.getCurrentDateStr = () => { const d=new Date(); return `${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`; }
-    window.globalState.selectedDateStr = window.getCurrentDateStr();
-</script>
+    let projects=[], tasks=[], users=[], vehicles=[], devices=[], logs=[], notifications=[], leaves=[];
+    let currentUser=null, userRole='staff';
+    let currentDate=new Date(), selectedDateStr=getCurrentDateStr(), isFirstLoad=true;
+    let pickerYear = new Date().getFullYear(), editingUserEmail=null, editingVehicleId=null, editingDeviceId=null, editingProjectId=null;
+    let editingTaskId = null;
+    let custodyTargetId = null, custodyType = null;
+    let currentReportFilter = 'all', currentReportDate = new Date().toISOString().slice(0, 7);
 
-<script type="module">
+    // --- GİRİŞ KONTROLÜ VE VERİ YÜKLEME ---
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const userDoc = await getDoc(doc(db, "users", user.email));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                currentUser = userData; userRole = userData.role;
+                document.getElementById('welcomeUser').innerText = userData.name.split(' ')[0];
+                
+                document.getElementById('profileName').innerText = userData.name;
+                document.getElementById('profileRole').innerText = userData.title || (userData.role === 'admin' ? 'Yönetici' : 'Personel');
+                document.getElementById('profileAvatar').innerText = userData.name.charAt(0);
+
+                applyPermissions();
+                document.getElementById('reportDateSelector').value = currentReportDate;
+                startListeners();
+            } else {
+                alert("Kullanıcı kaydınız bulunamadı.");
+                signOut(auth).then(()=> window.location.href="login.html");
+            }
+        } else {
+            window.location.href = "login.html";
+        }
+    });
+
+    window.handleLogout = () => { signOut(auth).then(() => { window.location.href = "login.html"; }); };
+
+    function applyPermissions() {
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = (userRole === 'admin') ? 'block' : 'none');
+        document.querySelectorAll('.nav-item.admin-only').forEach(el => el.style.display = (userRole === 'admin') ? 'flex' : 'none');
+    }
+
+    // --- TOAST MSG ---
     window.showToast = (msg, type = "success") => {
         const t = document.getElementById("toast-container");
         t.innerText = msg;
@@ -449,8 +497,457 @@
         setTimeout(() => { t.style.display = "none"; }, 3000);
     }
 
-    window.parseDateStr = (str) => { if(!str) return new Date(); const parts = str.split('-'); return new Date(parts[2], parts[1], parts[0]); }
+    function startListeners() {
+        const load = (col, arr, cb) => onSnapshot(collection(db, col), (s) => { 
+            arr.length=0; s.docs.forEach(d=>arr.push({id:d.id, ...d.data()})); 
+            if(cb) cb(); loadDropdowns();
+        });
+        load("projects", projects, renderProjects);
+        load("vehicles", vehicles, renderVehicleList);
+        load("devices", devices, renderDeviceList);
+        onSnapshot(collection(db, "users"), (s) => { users=[]; s.docs.forEach(d=>users.push(d.data())); renderTeamStatus(); renderUserList(); loadDropdowns(); });
+        
+        const logsQuery = query(collection(db, "logs"), orderBy("date", "desc"), limit(500));
+        onSnapshot(logsQuery, (s) => { logs = []; s.docs.forEach(d => logs.push(d.data())); filterReports(); });
+
+        onSnapshot(collection(db, "tasks"), (snapshot) => {
+            tasks=[]; snapshot.docs.forEach(d=>tasks.push({id:d.id, ...d.data()}));
+            renderCalendar();
+            if(document.querySelector('#taskModal').style.display === 'flex') openModalLogic(selectedDateStr);
+            updateStats(new Date().toISOString().split('T')[0]); renderTeamStatus(); renderDeviceList(); renderVehicleList(); filterReports();
+        });
+
+        const notifQuery = query(collection(db, "notifications"), where("target", "==", currentUser.name));
+        onSnapshot(notifQuery, (s) => {
+            notifications = [];
+            s.docs.forEach(d => notifications.push({id:d.id, ...d.data()}));
+            notifications.sort((a,b) => new Date(b.date) - new Date(a.date));
+            renderNotifications();
+        });
+
+        const leavesQuery = query(collection(db, "leaves"));
+        onSnapshot(leavesQuery, (s) => {
+            leaves = [];
+            s.docs.forEach(d => {
+                const l = {id:d.id, ...d.data()};
+                leaves.push(l);
+            });
+            leaves.sort((a,b) => b.startDate.localeCompare(a.startDate));
+            renderLeaves();
+        });
+
+        // --- YENİ: GERİ BİLDİRİM DİNLEYİCİSİ (SADECE ADMİNLER) ---
+        if(userRole === 'admin') {
+            const feedQuery = query(collection(db, "feedbacks"), orderBy("date", "desc"));
+            onSnapshot(feedQuery, (s) => {
+                const feedList = document.getElementById('adminFeedbackList');
+                if(s.empty) {
+                    feedList.innerHTML = '<p style="color:#aaa; text-align:center;">Geri bildirim yok.</p>';
+                    return;
+                }
+                feedList.innerHTML = s.docs.map(d => {
+                    const f = d.data();
+                    const dt = new Date(f.date);
+                    const dtStr = `${dt.getDate()}.${dt.getMonth()+1} ${dt.getHours()}:${dt.getMinutes()}`;
+                    return `<div class="feedback-item">
+                        <span class="feedback-date">${dtStr}</span>
+                        <strong>${f.userName}</strong><br>
+                        ${f.message}
+                    </div>`;
+                }).join('');
+            });
+        }
+    }
+
+    // --- YENİ: GERİ BİLDİRİM FONKSİYONLARI ---
+    window.openFeedbackModal = () => document.getElementById('feedbackModal').style.display = 'flex';
+    window.closeFeedbackModal = () => document.getElementById('feedbackModal').style.display = 'none';
     
+    window.submitFeedback = async () => {
+        const txt = document.getElementById('feedbackText').value;
+        if(!txt) return showToast("Lütfen bir mesaj yazın", "error");
+        
+        try {
+            await addDoc(collection(db, "feedbacks"), {
+                userId: currentUser.email,
+                userName: currentUser.name,
+                message: txt,
+                date: new Date().toISOString()
+            });
+            showToast("Geri bildirim gönderildi, teşekkürler!");
+            document.getElementById('feedbackText').value = "";
+            closeFeedbackModal();
+        } catch(e) {
+            console.error(e);
+            showToast("Hata oluştu", "error");
+        }
+    }
+
+    // --- İZİN SİSTEMİ FONKSİYONLARI ---
+    document.getElementById('l-start').addEventListener('change', calcLeaveDays);
+    document.getElementById('l-end').addEventListener('change', calcLeaveDays);
+
+    function calcLeaveDays() {
+        const s = document.getElementById('l-start').value;
+        const e = document.getElementById('l-end').value;
+        const info = document.getElementById('leaveCalcInfo');
+        
+        if(s && e) {
+            const d1 = new Date(s);
+            const d2 = new Date(e);
+            if(d1 > d2) {
+                info.innerText = "Hata: Bitiş tarihi başlangıçtan önce olamaz.";
+                info.style.display = 'block';
+                return 0;
+            } else {
+                const diffTime = Math.abs(d2 - d1);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
+                info.innerHTML = `Toplam İzin Süresi: <strong>${diffDays} Gün</strong>`;
+                info.style.display = 'block';
+                return diffDays;
+            }
+        } else {
+            info.style.display = 'none';
+            return 0;
+        }
+    }
+
+    window.saveLeaveRequest = async () => {
+        const s = document.getElementById('l-start').value;
+        const e = document.getElementById('l-end').value;
+        const type = document.getElementById('l-type').value;
+        const desc = document.getElementById('l-desc').value;
+        
+        const days = calcLeaveDays();
+        
+        if(!s || !e || days <= 0) {
+            showToast("Lütfen geçerli tarih aralığı seçiniz.", "error");
+            return;
+        }
+
+        if(confirm(`${days} gün ${type} talebi oluşturulsun mu?`)) {
+            try {
+                await addDoc(collection(db, "leaves"), {
+                    userId: currentUser.email,
+                    userName: currentUser.name,
+                    startDate: s,
+                    endDate: e,
+                    type: type,
+                    days: days,
+                    desc: desc,
+                    status: 'Bekliyor', 
+                    createdAt: new Date().toISOString()
+                });
+                
+                showToast("İzin talebi oluşturuldu!");
+                document.getElementById('l-start').value = "";
+                document.getElementById('l-end').value = "";
+                document.getElementById('l-desc').value = "";
+                document.getElementById('leaveCalcInfo').style.display = 'none';
+                
+                // YÖNETİCİLERE BİLDİRİM GÖNDERME
+                const admins = users.filter(u => u.role === 'admin');
+                const adminMsg = `*Yeni İzin Talebi*\n\n👤 Personel: ${currentUser.name}\n🏖️ Tür: ${type}\n📅 Süre: ${days} Gün\n\nOnaylamak için uygulamaya giriniz.`;
+                
+                admins.forEach(admin => {
+                    notifyUser(admin.name, adminMsg);
+                });
+
+            } catch(e) {
+                console.error(e);
+                showToast("Hata oluştu", "error");
+            }
+        }
+    }
+
+    window.updateLeaveStatus = async (id, newStatus, requesterName) => {
+        if(!confirm(`Bu izin talebini ${newStatus} olarak işaretlemek istiyor musunuz?`)) return;
+
+        try {
+            await updateDoc(doc(db, "leaves", id), { status: newStatus });
+            
+            // Personele Bildirim Gönder
+            const msg = `*İzin Talebiniz Sonuçlandı*\n\nSayın ${requesterName},\nİzin talebiniz yöneticiniz tarafından *${newStatus}* olarak işaretlenmiştir.`;
+            notifyUser(requesterName, msg);
+
+            showToast(`Talep ${newStatus}`);
+        } catch(e) {
+            console.error(e);
+            showToast("İşlem başarısız", "error");
+        }
+    }
+
+    function renderLeaves() {
+        const currentYear = document.getElementById('pdfYear').value || new Date().getFullYear().toString();
+        
+        // --- 1. TÜM PERSONEL ÖZETİ ---
+        const summaryStats = {};
+        
+        leaves.forEach(l => {
+            if(l.status === 'Onaylandı' && l.startDate.startsWith(currentYear)) {
+                if(!summaryStats[l.userName]) summaryStats[l.userName] = 0;
+                summaryStats[l.userName] += l.days;
+            }
+        });
+
+        let summaryHtml = "";
+        if(Object.keys(summaryStats).length === 0) {
+            summaryHtml = `<div style="text-align:center; padding:10px; color:#999;">${currentYear} yılında onaylı izin kaydı yok.</div>`;
+        } else {
+            summaryHtml = `<table style="width:100%; font-size:0.9rem; border-collapse:collapse;">
+                <tr style="background:#f0f0f0;"><th style="padding:5px; text-align:left;">Personel</th><th style="padding:5px; text-align:right;">Toplam (Gün)</th></tr>`;
+            for (const [name, days] of Object.entries(summaryStats)) {
+                summaryHtml += `<tr><td style="padding:5px; border-bottom:1px solid #eee;">${name}</td><td style="padding:5px; text-align:right; border-bottom:1px solid #eee; font-weight:bold;">${days}</td></tr>`;
+            }
+            summaryHtml += `</table>`;
+        }
+        document.getElementById('allUserLeavesStats').innerHTML = summaryHtml;
+
+        // --- 2. LİSTELEME ---
+        const listArea = document.getElementById('leaveListArea');
+        let displayLeaves = userRole === 'admin' ? leaves : leaves.filter(l => l.userId === currentUser.email);
+        
+        if(displayLeaves.length === 0) {
+            listArea.innerHTML = "<div style='color:#999; text-align:center; padding:20px;'>İzin talebi bulunmuyor.</div>";
+            return;
+        }
+
+        listArea.innerHTML = displayLeaves.map(l => {
+            const statusColor = l.status === 'Onaylandı' ? '#27ae60' : (l.status === 'Reddedildi' ? '#e74c3c' : '#f39c12');
+            const d1 = l.startDate.split('-').reverse().join('.');
+            const d2 = l.endDate.split('-').reverse().join('.');
+            const userHtml = `<br>👤 <strong>${l.userName}</strong>`;
+
+            let adminControls = "";
+            if (userRole === 'admin' && l.status === 'Bekliyor') {
+                adminControls = `
+                <div style="margin-top:10px; display:flex; gap:10px;">
+                    <button onclick="updateLeaveStatus('${l.id}', 'Onaylandı', '${l.userName}')" class="btn-sm" style="background:#27ae60; color:white; flex:1;">✓ Onayla</button>
+                    <button onclick="updateLeaveStatus('${l.id}', 'Reddedildi', '${l.userName}')" class="btn-sm" style="background:#e74c3c; color:white; flex:1;">✕ Reddet</button>
+                </div>
+                `;
+            }
+
+            const deleteBtn = userRole === 'admin' ? `<button onclick="deleteLeave('${l.id}')" style="border:none; background:none; color:red; font-size:1.1rem; margin-left:10px;">🗑</button>` : '';
+
+            return `
+            <div class="info-card">
+                <div class="info-card-header">
+                    <div>
+                        <span style="font-weight:bold; color:#764ba2;">${l.type}</span> (${l.days} Gün)
+                        ${userHtml}
+                        <br><small>📅 ${d1} - ${d2}</small>
+                        <br><small style="color:#666;">📝 ${l.desc || 'Açıklama yok'}</small>
+                    </div>
+                    <div style="display:flex; align-items:center;">
+                        <span class="badge" style="background:${statusColor}; color:white;">${l.status}</span>
+                        ${deleteBtn}
+                    </div>
+                </div>
+                ${adminControls}
+            </div>
+            `;
+        }).join('');
+    }
+
+    // PDF İNDİRME FONKSİYONU
+    window.downloadLeavePDF = (mode) => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const year = document.getElementById('pdfYear').value;
+        const month = document.getElementById('pdfMonth').value;
+        
+        let filteredLeaves = leaves.filter(l => l.status === 'Onaylandı');
+        let title = "";
+        let bodyData = [];
+
+        if (mode === 'year') {
+            title = `${year} Yılı Personel İzin Özeti`;
+            filteredLeaves = filteredLeaves.filter(l => l.startDate.startsWith(year));
+            
+            const grouped = {};
+            filteredLeaves.forEach(l => {
+                if(!grouped[l.userName]) grouped[l.userName] = { total: 0, details: [] };
+                grouped[l.userName].total += l.days;
+                grouped[l.userName].details.push(l.type);
+            });
+
+            Object.keys(grouped).forEach(name => {
+                const types = [...new Set(grouped[name].details)].join(', ');
+                bodyData.push([name, types, grouped[name].total + ' Gün']);
+            });
+
+            doc.text(title, 14, 15);
+            doc.autoTable({
+                head: [['Personel', 'Kullanılan İzin Türleri', 'Toplam Gün']],
+                body: bodyData,
+                startY: 20
+            });
+
+        } else {
+            const monthName = document.getElementById('pdfMonth').options[document.getElementById('pdfMonth').selectedIndex].text;
+            if(month === 'all') {
+                alert("Lütfen aylık rapor için belirli bir ay seçiniz.");
+                return;
+            }
+            
+            title = `${monthName} ${year} İzin Raporu`;
+            const target = `${year}-${month}`;
+            
+            filteredLeaves = filteredLeaves.filter(l => l.startDate.startsWith(target) || l.endDate.startsWith(target));
+            
+            filteredLeaves.forEach(l => {
+                const d1 = l.startDate.split('-').reverse().join('.');
+                const d2 = l.endDate.split('-').reverse().join('.');
+                bodyData.push([l.userName, l.type, `${d1} - ${d2}`, l.days + ' Gün']);
+            });
+
+            if(bodyData.length === 0) {
+                alert("Seçilen ayda izin kaydı bulunamadı.");
+                return;
+            }
+
+            doc.text(title, 14, 15);
+            doc.autoTable({
+                head: [['Personel', 'Tür', 'Tarih Aralığı', 'Süre']],
+                body: bodyData,
+                startY: 20
+            });
+        }
+
+        doc.save(`Izin_Raporu_${mode}_${year}.pdf`);
+    }
+
+    document.getElementById('pdfYear').addEventListener('change', renderLeaves);
+
+    window.deleteLeave = async (id) => {
+        if(confirm("Bu izin kaydını silmek istiyor musunuz?")) {
+            await deleteDoc(doc(db, "leaves", id));
+            showToast("Silindi");
+        }
+    }
+
+    // --- MEVCUT DİĞER FONKSİYONLAR ---
+
+    window.updateUserPassword = async () => {
+        const p1 = document.getElementById('new-pass').value;
+        const p2 = document.getElementById('new-pass-confirm').value;
+        
+        if(p1.length < 6) return showToast("Şifre en az 6 karakter olmalı", "error");
+        if(p1 !== p2) return showToast("Şifreler eşleşmiyor", "error");
+
+        try {
+            await updatePassword(auth.currentUser, p1);
+            showToast("Şifre başarıyla güncellendi!", "success");
+            document.getElementById('new-pass').value = "";
+            document.getElementById('new-pass-confirm').value = "";
+        } catch(e) {
+            console.error(e);
+            showToast("Hata: " + e.message, "error");
+            if(e.code === 'auth/requires-recent-login') {
+                alert("Güvenlik nedeniyle şifre değiştirmek için yeniden giriş yapmalısınız.");
+                handleLogout();
+            }
+        }
+    }
+
+    window.renderAdminLogs = (dateVal) => {
+        const tbody = document.getElementById('adminLogBody');
+        if(!dateVal) { tbody.innerHTML = '<tr><td colspan="4">Tarih seçiniz.</td></tr>'; return; }
+        
+        const filtered = logs.filter(l => l.date.startsWith(dateVal));
+        if(filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="4">Kayıt yok.</td></tr>'; return; }
+
+        tbody.innerHTML = filtered.map(l => {
+            const d = new Date(l.date);
+            const time = `${d.getHours()}:${d.getMinutes()}`;
+            return `<tr><td>${time}</td><td>${l.admin || 'Sistem'}</td><td>${l.action}</td><td>${l.person} - ${l.item}</td></tr>`;
+        }).join('');
+    }
+
+    window.exportLogsToWord = () => {
+        const dateVal = document.getElementById('adminLogDate').value;
+        if(!dateVal) return alert("Önce tarih seçiniz.");
+        
+        const html = document.getElementById('adminLogTable').outerHTML;
+        const header = "\x3Chtml\x3E\x3Chead\x3E\x3Cmeta charset='UTF-8'\x3E\x3C/head\x3E\x3Cbody\x3E";
+        const footer = "\x3C/body\x3E\x3C/html\x3E";
+        const blob = new Blob([header + html + footer], { type: 'application/msword' });
+        
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Gunluk_Log_${dateVal}.doc`;
+        a.click();
+    }
+
+    async function notifyUser(personName, message) {
+        try {
+            const shortMsg = message.includes("Yeni Görev") ? "Yeni görev atandı. Detaylar için tıklayın." : (message.includes("iade") ? "Zimmet iade alındı." : message);
+            await addDoc(collection(db, "notifications"), {
+                target: personName,
+                msg: shortMsg,
+                date: new Date().toISOString(),
+                read: false
+            });
+        } catch(e) { console.error("Bildirim DB hatası", e); }
+        const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+    }
+
+    window.toggleNotifications = () => {
+        const drop = document.getElementById('notification-dropdown');
+        drop.style.display = drop.style.display === 'block' ? 'none' : 'block';
+    }
+
+    document.addEventListener('click', function(event) {
+        const drop = document.getElementById('notification-dropdown');
+        const btn = document.querySelector('.icon-btn[onclick="toggleNotifications()"]');
+        if (drop.style.display === 'block' && !drop.contains(event.target) && !btn.contains(event.target)) {
+            drop.style.display = 'none';
+        }
+    });
+
+    function renderNotifications() {
+        const list = document.getElementById('notif-list');
+        const badge = document.getElementById('notif-badge');
+        
+        if(notifications.length > 0) {
+            badge.innerText = notifications.length;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+
+        if(notifications.length === 0) {
+            list.innerHTML = '<div class="notif-empty">Bildirim yok.</div>';
+            return;
+        }
+
+        list.innerHTML = notifications.map(n => {
+            const d = new Date(n.date);
+            const timeStr = `${d.getDate()}.${d.getMonth()+1} ${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
+            return `
+            <div class="notif-item">
+                ${n.msg}
+                <small>${timeStr}</small>
+            </div>
+            `;
+        }).join('');
+    }
+
+    window.clearAllNotifications = async () => {
+        if(notifications.length === 0) return;
+        if(!confirm("Tüm bildirimler silinsin mi?")) return;
+        const batch = writeBatch(db);
+        notifications.forEach(n => {
+            const ref = doc(db, "notifications", n.id);
+            batch.delete(ref);
+        });
+        await batch.commit();
+        showToast("Bildirimler temizlendi.");
+    }
+
     window.filterList = (input, listId, itemTag) => {
         const filter = input.value.toLowerCase();
         const list = document.getElementById(listId);
@@ -461,16 +958,15 @@
         });
     }
 
-    // Excel Export
     window.exportExcel = () => {
-        if (typeof XLSX === 'undefined') return alert("Excel kütüphanesi yüklenemedi.");
-        const [year, month] = window.globalState.currentReportDate.split('-').map(Number);
+        if (typeof XLSX === 'undefined') return alert("Excel kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edin.");
+        const [year, month] = currentReportDate.split('-').map(Number);
         const reportData = [];
-        window.globalState.users.forEach(u => {
+        users.forEach(u => {
             let days = 0;
-            window.globalState.tasks.forEach(t => {
-                let start = new Date(t.startDate || window.parseDateStr(t.date));
-                let end = new Date(t.endDate || window.parseDateStr(t.date));
+            tasks.forEach(t => {
+                let start = new Date(t.startDate || parseDateStr(t.date));
+                let end = new Date(t.endDate || parseDateStr(t.date));
                 let loop = new Date(start);
                 while(loop <= end) {
                     if (loop.getFullYear() === year && loop.getMonth() === (month - 1)) {
@@ -485,16 +981,482 @@
         const ws = XLSX.utils.json_to_sheet(reportData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Efor");
-        XLSX.writeFile(wb, `Personel_Efor_${window.globalState.currentReportDate}.xlsx`);
+        XLSX.writeFile(wb, `Personel_Efor_${currentReportDate}.xlsx`);
     }
-</script>
 
-<script type="module">
-    // Takvim Render
-    window.renderCalendar = () => {
+    async function addLog(type, item, action, person) {
+        await addDoc(collection(db, "logs"), { date: new Date().toISOString(), type: type, item: item, action: action, person: person, admin: currentUser.name });
+    }
+    window.setReportFilter = (filter, btn) => { currentReportFilter = filter; document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); filterReports(); }
+    window.filterReports = () => { currentReportDate = document.getElementById('reportDateSelector').value; renderLogs(); renderPersonnelReport(); }
+    
+    function renderLogs() {
+        const table = document.getElementById('logTable');
+        const filteredLogs = logs.filter(l => {
+            const logMonth = l.date.substring(0, 7); const typeMatch = currentReportFilter === 'all' || l.type === currentReportFilter;
+            return logMonth === currentReportDate && typeMatch;
+        });
+        if (filteredLogs.length === 0) { table.innerHTML = '<tr><td>Kayıt yok.</td></tr>'; return; }
+        table.innerHTML = filteredLogs.map(l => {
+            const d = new Date(l.date);
+            const dateStr = `${d.getDate()}.${d.getMonth()+1} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+            const actionClass = l.action === 'take' ? 'action-take' : 'action-return';
+            const actionText = l.action === 'take' ? 'Aldı' : 'Verdi';
+            const icon = l.type === 'vehicle' ? '🚗' : '🧰';
+            return `<tr><td><span class="log-date">${dateStr}</span></td><td>${icon} <strong>${l.person}</strong><br>${l.item} <span class="log-action ${actionClass}">${actionText}</span></td></tr>`;
+        }).join('');
+    }
+    function renderPersonnelReport() {
+        const [year, month] = currentReportDate.split('-').map(Number);
+        const reportData = {}; users.forEach(u => reportData[u.name] = 0);
+        tasks.forEach(t => {
+            let start = new Date(t.startDate || parseDateStr(t.date));
+            let end = new Date(t.endDate || parseDateStr(t.date));
+            let loop = new Date(start);
+            while(loop <= end) {
+                if (loop.getFullYear() === year && loop.getMonth() === (month - 1)) {
+                    if (Array.isArray(t.person)) t.person.forEach(p => { if(reportData[p] !== undefined) reportData[p]++; });
+                    else if(reportData[t.person] !== undefined) reportData[t.person]++;
+                }
+                loop.setDate(loop.getDate() + 1);
+            }
+        });
+        document.getElementById('personnelReportBody').innerHTML = Object.keys(reportData).map(key => `<tr><td>${key}</td><td style="font-weight:bold;">${reportData[key]} Gün</td></tr>`).join('');
+    }
+
+    window.openCustodyModal = (type, id, name, extra) => {
+        custodyType = type; custodyTargetId = id;
+        document.getElementById('custodyItemName').innerText = `${name} (${extra||''})`;
+        document.getElementById('c-person').innerHTML = users.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+        document.getElementById('custodyModal').style.display = 'flex';
+    }
+    window.closeCustodyModal = () => document.getElementById('custodyModal').style.display = 'none';
+    
+    window.saveCustody = async () => {
+        try {
+            const person = document.getElementById('c-person').value;
+            const collectionName = custodyType === 'vehicle' ? 'vehicles' : 'devices';
+            await updateDoc(doc(db, collectionName, custodyTargetId), { currentHolder: person });
+            const itemName = document.getElementById('custodyItemName').innerText;
+            await addLog(custodyType, itemName, 'take', person);
+            
+            const msg = `*Sayın ${person},*\n\nTarafınıza yeni bir zimmet ataması yapılmıştır.\n\n📦 *Zimmet:* ${itemName}\n📅 *Tarih:* ${new Date().toLocaleDateString('tr-TR')}\n\nLütfen malzemeyi kontrol ediniz.`;
+            notifyUser(person, msg);
+            
+            showToast("Zimmet Başarılı", "success");
+            closeCustodyModal();
+        } catch(e) { showToast("Hata oluştu", "error"); }
+    }
+    window.returnItem = async (type, id) => {
+        if(confirm("İade?")) {
+            try {
+                const collectionName = type === 'vehicle' ? 'vehicles' : 'devices';
+                let prevHolder = "Bilinmiyor";
+                const itemDoc = type === 'vehicle' ? vehicles.find(v=>v.id===id) : devices.find(d=>d.id===id);
+                if(itemDoc) prevHolder = itemDoc.currentHolder;
+                await updateDoc(doc(db, collectionName, id), { currentHolder: null });
+                let itemDetail = itemDoc ? (type==='vehicle' ? `${itemDoc.plate}` : `${itemDoc.name}`) : '';
+                await addLog(type, itemDetail, 'return', prevHolder);
+                
+                if(prevHolder && prevHolder !== "Bilinmiyor") {
+                    const itemLabel = type === 'vehicle' ? 'Araç' : 'Cihaz';
+                    const msg = `*Sayın ${prevHolder},*\n\nÜzerinizde bulunan zimmet iade alınmıştır.\n\n📦 *Tip:* ${itemLabel}\n🆔 *Detay:* ${itemDetail}\n📅 *Tarih:* ${new Date().toLocaleDateString('tr-TR')}\n\nSistemden düşümü yapılmıştır.`;
+                    notifyUser(prevHolder, msg);
+                }
+
+                showToast("İade Alındı", "success");
+            } catch(e) { showToast("Hata oluştu", "error"); }
+        }
+    }
+
+    function setMultiSelectValues(id, values) {
+        const inputs = document.querySelectorAll(`#${id} input`);
+        inputs.forEach(input => {
+            input.checked = values.includes(input.value);
+        });
+    }
+
+    window.editTask = (id) => {
+        const t = tasks.find(x => x.id === id);
+        if(!t) return;
+        editingTaskId = id;
+        document.getElementById('taskFormTitle').innerText = "Görevi Düzenle";
+        document.getElementById('btn-save-task').innerText = "Güncelle";
+        document.getElementById('btn-cancel-task').style.display = "block";
+        document.getElementById('btn-save-task').style.background = "#f39c12"; 
+        document.getElementById('t-start-date').value = t.startDate || "";
+        document.getElementById('t-end-date').value = t.endDate || "";
+        document.getElementById('t-project-select').value = t.projectId || "";
+        document.getElementById('t-loc').value = t.location || "";
+        setMultiSelectValues('ms-person', Array.isArray(t.person) ? t.person : [t.person]);
+        setMultiSelectValues('ms-device', Array.isArray(t.device) ? t.device : [t.device]);
+        setMultiSelectValues('ms-plate', Array.isArray(t.plate) ? t.plate : [t.plate]);
+    }
+
+    window.cancelTaskEdit = () => {
+        editingTaskId = null;
+        document.getElementById('taskFormTitle').innerText = "Yeni Atama";
+        document.getElementById('btn-save-task').innerText = "Kaydet";
+        document.getElementById('btn-save-task').style.background = ""; 
+        document.getElementById('btn-cancel-task').style.display = "none";
+        document.getElementById('t-loc').value = "";
+        document.getElementById('t-project-select').value = "";
+        document.querySelectorAll('.multi-select-area input').forEach(c => c.checked = false);
+        document.getElementById('t-start-date').value = selectedDateStr;
+        document.getElementById('t-end-date').value = selectedDateStr;
+    }
+
+    window.saveTask = async () => {
+        const btn = document.getElementById('btn-save-task');
+        btn.disabled = true; 
+        try {
+            const per = getMultiSelectValues('ms-person'), dev = getMultiSelectValues('ms-device'), plate = getMultiSelectValues('ms-plate');
+            const projVal = document.getElementById('t-project-select').value;
+            const sDate = document.getElementById('t-start-date').value;
+            const eDate = document.getElementById('t-end-date').value;
+            const loc = document.getElementById('t-loc').value;
+
+            if(!projVal || per.length===0 || !sDate || !eDate) {
+                showToast("Eksik bilgi: Personel, Proje ve Tarih seçiniz.", "error");
+                btn.disabled = false; return;
+            }
+            if(sDate > eDate) {
+                showToast("Başlangıç tarihi bitişten büyük olamaz.", "error");
+                btn.disabled = false; return;
+            }
+
+            let conflictMsg = "";
+            dev.forEach(dName => {
+                const deviceObj = devices.find(d => d.name === dName);
+                if (deviceObj && deviceObj.currentHolder && !per.includes(deviceObj.currentHolder)) {
+                    conflictMsg += `⚠️ ${dName} cihazı ${deviceObj.currentHolder} zimmetinde!\n`;
+                }
+            });
+            if (conflictMsg && !confirm(`DİKKAT:\n${conflictMsg}\nYine de devam et?`)) {
+                btn.disabled = false; return;
+            }
+
+            const projName = document.getElementById('t-project-select').options[document.getElementById('t-project-select').selectedIndex].text;
+            const taskData = { 
+                startDate: sDate, 
+                endDate: eDate, 
+                person: per, 
+                projectName: projName, 
+                projectId: projVal, 
+                location: loc, 
+                device: dev, 
+                plate: plate 
+            };
+
+            if (editingTaskId) {
+                await updateDoc(doc(db, "tasks", editingTaskId), taskData);
+                showToast("Görev güncellendi!", "success");
+                cancelTaskEdit(); 
+            } else {
+                await addDoc(collection(db, "tasks"), taskData);
+                showToast("Görev atandı!", "success");
+                
+                const teamStr = per.join(", ");
+                const platesStr = plate.length > 0 ? plate.join(", ") : "Yok";
+                const devStr = dev.length > 0 ? dev.join(", ") : "Yok";
+                const dateRange = `${sDate.split('-').reverse().join('.')} - ${eDate.split('-').reverse().join('.')}`;
+                const appLink = "https://yavuzdalgic18.github.io/EkipTakipApp/"; 
+
+                per.forEach(pName => {
+                    const msg = `*@${pName},*\n\nAşağıdaki detaylara sahip yeni bir göreve atandınız.\n\n📂 *Proje:* ${projName}\n📍 *Konum:* ${loc}\n📅 *Tarih:* ${dateRange}\n\n👥 *Ekip:* ${teamStr}\n🚗 *Araçlar:* ${platesStr}\n🧰 *Ekipman:* ${devStr}\n\nDetaylar ve işlem yapmak için uygulamayı kontrol ediniz:\n🔗 ${appLink}`;
+                    
+                    notifyUser(pName, msg);
+                });
+
+                document.getElementById('t-loc').value=""; 
+                document.querySelectorAll('.multi-select-area input').forEach(c=>c.checked=false);
+            }
+        } catch (error) {
+            console.error(error);
+            showToast("Hata: " + error.message, "error");
+        } finally {
+            btn.disabled = false; 
+        }
+    }
+    
+    window.delTask = async (id) => { 
+        if(confirm("Silmek istiyor musunuz?")) {
+            try { await deleteDoc(doc(db, "tasks", id)); showToast("Silindi.", "success"); } 
+            catch(e) { showToast("Silinemedi.", "error"); }
+        } 
+    }
+
+    window.addVehicle=async()=>{const p=document.getElementById('v-plate').value; if(!p)return; await addDoc(collection(db,"vehicles"),{plate:p,info:document.getElementById('v-info').value,inspectionDate:document.getElementById('v-inspection').value,currentHolder:null}); showToast("Araç Eklendi"); resetVehicleForm();}
+    window.updateVehicleDB=async()=>{await updateDoc(doc(db,"vehicles",editingVehicleId),{plate:document.getElementById('v-plate').value,info:document.getElementById('v-info').value,inspectionDate:document.getElementById('v-inspection').value}); showToast("Araç Güncellendi"); resetVehicleForm();}
+    window.editVehicle=(id)=>{const v=vehicles.find(x=>x.id===id); if(!v)return; document.getElementById('v-plate').value=v.plate; document.getElementById('v-info').value=v.info; document.getElementById('v-inspection').value=v.inspectionDate||""; editingVehicleId=id; document.getElementById('vehicleFormTitle').innerText="Düzenle"; document.getElementById('btn-v-save').style.display='none'; document.getElementById('btn-v-update').style.display='block'; document.getElementById('btn-v-cancel').style.display='block';}
+    window.cancelVehicleEdit=resetVehicleForm;
+    function resetVehicleForm(){editingVehicleId=null; document.getElementById('v-plate').value=""; document.getElementById('v-info').value=""; document.getElementById('v-inspection').value=""; document.getElementById('vehicleFormTitle').innerText="Yeni Araç Ekle"; document.getElementById('btn-v-save').style.display='block'; document.getElementById('btn-v-update').style.display='none'; document.getElementById('btn-v-cancel').style.display='none';}
+    window.deleteVehicle=async(id)=>{if(confirm("Sil?")) { await deleteDoc(doc(db,"vehicles",id)); showToast("Silindi"); }}
+    
+    function renderVehicleList(){
+        const todayISO = new Date().toISOString().split('T')[0];
+        document.getElementById('vehicleListArea').innerHTML = vehicles.map(v => { 
+            let inspHtml = v.inspectionDate ? (new Date(v.inspectionDate) < new Date() ? `<small style="color:red; display:block;">⚠️ Muayene: ${v.inspectionDate}</small>` : `<small style="color:#666;">📅 Muayene: ${v.inspectionDate}</small>`) : ""; 
+            
+            let statusBadge = `<span class="badge badge-green">BOŞTA</span>`;
+            let zimmetHtml = ""; 
+
+            if(v.currentHolder) { 
+                statusBadge = `<span class="badge badge-orange">👤 ${v.currentHolder}</span>`; 
+                if(userRole==='admin') zimmetHtml = `<button class="btn-sm btn-outline-red" onclick="returnItem('vehicle','${v.id}')">İade Al</button>`; 
+            } else if(userRole==='admin') { 
+                zimmetHtml = `<button class="btn-sm btn-outline-blue" onclick="openCustodyModal('vehicle','${v.id}','${v.plate}','${v.info || ''}')">Zimmetle</button>`; 
+            } 
+
+            const at = tasks.find(t => {
+                const s = t.startDate || parseDateStr(t.date).toISOString().split('T')[0];
+                const e = t.endDate || parseDateStr(t.date).toISOString().split('T')[0];
+                const inRange = todayISO >= s && todayISO <= e;
+                const hasPlate = Array.isArray(t.plate) ? t.plate.includes(v.plate) : t.plate === v.plate;
+                return inRange && hasPlate;
+            });
+
+            if(at) statusBadge += ` <span class="badge badge-red" style="margin-left:5px">GÖREVDE</span>`;
+
+            return `<div class="info-card ${v.currentHolder?'custody':'active'}"><div class="info-card-header"><div><strong>${v.plate}</strong><br><small>${v.info || ''}</small>${inspHtml}</div>${userRole==='admin' ? `<div><button onclick="editVehicle('${v.id}')" style="border:none; bg:none; font-size:1.1rem;">✎</button><button onclick="deleteVehicle('${v.id}')" style="color:red; border:none; bg:none; font-size:1.1rem;">🗑</button></div>` : ''}</div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">${statusBadge}${zimmetHtml}</div></div>`; 
+        }).join('');
+    }
+
+    // --- CİHAZ YÖNETİMİ (PDF ÖZELLİKLİ) ---
+    async function uploadPDF(file) {
+        if (!file) return null;
+        try {
+            const fName = new Date().getTime() + '_' + file.name;
+            const storageRef = ref(storage, 'calibration_docs/' + fName);
+            await uploadBytes(storageRef, file);
+            return await getDownloadURL(storageRef); 
+        } catch (e) {
+            console.error("Yükleme hatası:", e);
+            alert("Dosya yüklenirken hata oluştu! Konsol (Depolama) açık mı?");
+            return null;
+        }
+    }
+
+    window.addDevice = async () => {
+        const n = document.getElementById('d-name').value;
+        const fileInput = document.getElementById('d-file').files[0];
+        
+        if (!n) return showToast("Cihaz adı zorunlu", "error");
+
+        const btn = document.getElementById('btn-d-save');
+        btn.innerText = "Yükleniyor..."; 
+        btn.disabled = true;
+
+        let pdfUrl = null;
+        if (fileInput) {
+            pdfUrl = await uploadPDF(fileInput);
+        }
+
+        await addDoc(collection(db, "devices"), {
+            name: n,
+            serial: document.getElementById('d-serial').value,
+            calib: document.getElementById('d-calib').value,
+            pdfUrl: pdfUrl,
+            currentHolder: null
+        });
+
+        showToast("Cihaz Eklendi");
+        document.getElementById('d-name').value = "";
+        document.getElementById('d-serial').value = "";
+        document.getElementById('d-calib').value = "";
+        document.getElementById('d-file').value = ""; 
+        btn.innerText = "Ekle";
+        btn.disabled = false;
+    }
+
+    window.updateDeviceDB = async () => {
+        const fileInput = document.getElementById('d-file').files[0];
+        
+        const btn = document.getElementById('btn-d-update');
+        btn.innerText = "Güncelleniyor...";
+        btn.disabled = true;
+
+        let updateData = {
+            name: document.getElementById('d-name').value,
+            serial: document.getElementById('d-serial').value,
+            calib: document.getElementById('d-calib').value
+        };
+
+        if (fileInput) {
+            const newUrl = await uploadPDF(fileInput);
+            if (newUrl) updateData.pdfUrl = newUrl;
+        }
+
+        await updateDoc(doc(db, "devices", editingDeviceId), updateData);
+        
+        showToast("Güncellendi");
+        resetDeviceForm();
+        btn.innerText = "Güncelle";
+        btn.disabled = false;
+    }
+
+    window.editDevice = (id) => {
+        const d = devices.find(x => x.id === id); 
+        if (!d) return; 
+        document.getElementById('d-name').value = d.name; 
+        document.getElementById('d-serial').value = d.serial; 
+        document.getElementById('d-calib').value = d.calib || ""; 
+        editingDeviceId = id; 
+        document.getElementById('deviceFormTitle').innerText = "Düzenle"; 
+        document.getElementById('btn-d-save').style.display = 'none'; 
+        document.getElementById('btn-d-update').style.display = 'block'; 
+        document.getElementById('btn-d-cancel').style.display = 'block';
+    }
+
+    window.cancelDeviceEdit = resetDeviceForm;
+    function resetDeviceForm() {
+        editingDeviceId = null; 
+        document.getElementById('d-name').value = ""; 
+        document.getElementById('d-serial').value = ""; 
+        document.getElementById('d-calib').value = ""; 
+        document.getElementById('d-file').value = ""; 
+        document.getElementById('deviceFormTitle').innerText = "Yeni Cihaz Ekle"; 
+        document.getElementById('btn-d-save').style.display = 'block'; 
+        document.getElementById('btn-d-update').style.display = 'none'; 
+        document.getElementById('btn-d-cancel').style.display = 'none';
+    }
+
+    window.deleteDevice = async (id) => {
+        if (confirm("Sil?")) { await deleteDoc(doc(db, "devices", id)); showToast("Silindi"); }
+    }
+    
+    function renderDeviceList() {
+        const todayISO = new Date().toISOString().split('T')[0];
+        document.getElementById('deviceListArea').innerHTML = devices.map(d => { 
+            let statusBadge = `<span class="badge badge-green">BOŞTA</span>`, zimmetHtml = ""; 
+            if(d.currentHolder) { 
+                statusBadge = `<span class="badge badge-orange">👤 ${d.currentHolder}</span>`; 
+                if(userRole==='admin') zimmetHtml = `<button class="btn-sm btn-outline-red" onclick="returnItem('device','${d.id}')">İade Al</button>`; 
+            } else if(userRole==='admin') { 
+                zimmetHtml = `<button class="btn-sm btn-outline-blue" onclick="openCustodyModal('device','${d.id}','${d.name}', '${d.serial || ''}')">Zimmetle</button>`; 
+            } 
+            const at = tasks.find(t => {
+                const s = t.startDate || parseDateStr(t.date).toISOString().split('T')[0];
+                const e = t.endDate || parseDateStr(t.date).toISOString().split('T')[0];
+                const inRange = todayISO >= s && todayISO <= e;
+                const hasDev = Array.isArray(t.device) ? t.device.includes(d.name) : t.device === d.name;
+                return inRange && hasDev;
+            });
+            if(at) statusBadge += ` <span class="badge badge-red" style="margin-left:5px">GÖREVDE</span>`; 
+            
+            let calibHtml = d.calib ? `<br><small style="color:${new Date(d.calib) < new Date() ? 'red' : '#666'}">Kalibrasyon: ${d.calib}</small>` : ""; 
+            
+            let pdfButton = "";
+            if (d.pdfUrl) {
+                pdfButton = `<a href="${d.pdfUrl}" target="_blank" style="text-decoration:none; margin-left:10px; font-size:0.8rem; background:#3498db; color:white; padding:3px 8px; border-radius:5px;">📄 İndir</a>`;
+            } else {
+                pdfButton = `<small style="color:#aaa; margin-left:10px;">(Dosya Yok)</small>`;
+            }
+
+            return `<div class="info-card ${d.currentHolder?'custody':'active'}"><div class="info-card-header"><div><strong>${d.name}</strong> <small>(${d.serial || '-'})</small> ${pdfButton} ${calibHtml}</div>${userRole==='admin' ? `<div><button onclick="editDevice('${d.id}')" style="border:none; bg:none; font-size:1.1rem;">✎</button><button onclick="deleteDevice('${d.id}')" style="color:red; border:none; bg:none; font-size:1.1rem;">🗑</button></div>` : ''}</div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">${statusBadge}${zimmetHtml}</div></div>`; 
+        }).join('');
+    }
+
+    window.addUserToDB=async()=>{const n=document.getElementById('u-name').value; const e=document.getElementById('u-email').value.trim(); const r=document.getElementById('u-role').value; const t=document.getElementById('u-title').value; const ph=document.getElementById('u-phone').value; if(!n || !e) return alert("Ad ve E-posta zorunludur."); await setDoc(doc(db,"users",e), {name:n, email:e, role:r, title:t, phone:ph}); showToast("Yetkili Eklendi"); cancelUserEdit();}
+    window.editUser=(e)=>{const u=users.find(x=>x.email===e); if(!u)return; document.getElementById('u-name').value=u.name; document.getElementById('u-title').value=u.title||''; document.getElementById('u-email').value=u.email; document.getElementById('u-email').disabled=true; document.getElementById('u-phone').value=u.phone||''; document.getElementById('u-role').value=u.role; editingUserEmail=e; document.getElementById('userFormTitle').innerText="Düzenle"; document.getElementById('btn-user-add').style.display='none'; document.getElementById('btn-user-update').style.display='block'; document.getElementById('btn-user-cancel').style.display='block';}
+    window.updateUserDB=async()=>{await updateDoc(doc(db,"users",editingUserEmail),{name:document.getElementById('u-name').value,title:document.getElementById('u-title').value,role:document.getElementById('u-role').value,phone:document.getElementById('u-phone').value}); showToast("Kullanıcı Güncellendi"); cancelUserEdit();}
+    window.cancelUserEdit=()=>{editingUserEmail=null; document.getElementById('u-name').value=""; document.getElementById('u-title').value=""; document.getElementById('u-email').value=""; document.getElementById('u-phone').value=""; document.getElementById('u-email').disabled=false; document.getElementById('userFormTitle').innerText="Yeni Kullanıcı"; document.getElementById('btn-user-add').style.display='block'; document.getElementById('btn-user-update').style.display='none'; document.getElementById('btn-user-cancel').style.display='none';}
+    window.deleteUser=async(e)=>{if(confirm("Sil?")) { await deleteDoc(doc(db,"users",e)); showToast("Kullanıcı Silindi"); }}
+    function renderUserList(){document.getElementById('userListArea').innerHTML=users.map(u=>`<div class="user-card" style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;"><div><strong>${u.name}</strong> <small>(${u.title||''})</small><br><small>${u.email}</small><br><small>📞 ${u.phone||'-'}</small></div><div><span class="badge badge-gray">${u.role}</span>${userRole==='admin' ? `<button onclick="editUser('${u.email}')" style="border:none; bg:none; margin-right:5px;">✎</button><button onclick="deleteUser('${u.email}')" style="color:red; border:none; bg:none;">🗑</button>` : ''}</div></div>`).join('');}
+    
+    window.submitProject=async()=>{const n=document.getElementById('p-name').value; if(!n)return; await addDoc(collection(db,"projects"),{name:n,manager:document.getElementById('p-manager').value,start:document.getElementById('p-start').value,end:document.getElementById('p-end').value,cost:document.getElementById('p-cost').value,offer:document.getElementById('p-offer').value}); showToast("Proje Eklendi"); document.getElementById('p-name').value="";}
+    window.updateProjectDB=async()=>{await updateDoc(doc(db,"projects",editingProjectId),{name:document.getElementById('p-name').value,manager:document.getElementById('p-manager').value,start:document.getElementById('p-start').value,end:document.getElementById('p-end').value,cost:document.getElementById('p-cost').value,offer:document.getElementById('p-offer').value}); showToast("Proje Güncellendi"); cancelProjectEdit();}
+    window.editProject=(id)=>{const p=projects.find(x=>x.id===id); if(!p)return; document.getElementById('p-name').value=p.name; document.getElementById('p-manager').value=p.manager; document.getElementById('p-start').value=p.start||""; document.getElementById('p-end').value=p.end||""; document.getElementById('p-cost').value=p.cost; document.getElementById('p-offer').value=p.offer; editingProjectId=id; document.getElementById('projectFormTitle').innerText="Proje Düzenle"; document.getElementById('btn-p-save').style.display='none'; document.getElementById('btn-p-update').style.display='block'; document.getElementById('btn-p-cancel').style.display='block';}
+    window.cancelProjectEdit=()=>{editingProjectId=null; document.getElementById('p-name').value=""; document.getElementById('p-cost').value=""; document.getElementById('p-offer').value=""; document.getElementById('p-start').value=""; document.getElementById('p-end').value=""; document.getElementById('projectFormTitle').innerText="Yeni Proje"; document.getElementById('btn-p-save').style.display='block'; document.getElementById('btn-p-update').style.display='none'; document.getElementById('btn-p-cancel').style.display='none';}
+    window.deleteProject=async(id)=>{if(confirm("Sil?")) { await deleteDoc(doc(db,"projects",id)); showToast("Silindi"); }}
+    function renderProjects(){document.getElementById('projectListBody').innerHTML=projects.map(p=>{const pf=p.offer-p.cost; return `<div style="padding:15px; border-bottom:1px solid #eee;"><strong>${p.name}</strong> (${p.start||'-'} / ${p.end||'?'})<br><small>${p.manager||'-'} | Kar: ${pf}</small> ${userRole==='admin' ? `<div style="float:right;"><button onclick="editProject('${p.id}')" style="border:none; bg:none; font-size:1.1rem;">✎</button><button onclick="deleteProject('${p.id}')" style="color:red; border:none; bg:none; font-size:1.1rem;">🗑</button></div>` : ''}</div>`;}).join('');}
+    
+    function renderTeamStatus(){
+        const todayStr=new Date().toISOString().split('T')[0];
+        document.getElementById('teamListArea').innerHTML=users.map(u=>{
+            const at = tasks.find(t => {
+                const s = t.startDate || parseDateStr(t.date).toISOString().split('T')[0];
+                const e = t.endDate || parseDateStr(t.date).toISOString().split('T')[0];
+                const inRange = todayStr >= s && todayStr <= e;
+                const hasPerson = Array.isArray(t.person) ? t.person.includes(u.name) : t.person === u.name;
+                return inRange && hasPerson;
+            });
+            let statusHtml=at?`<div class="badge badge-green">SAHADA</div>`:`<div class="badge badge-gray">BOŞTA</div>`;
+            const upcoming = tasks.filter(t => (t.startDate || parseDateStr(t.date).toISOString().split('T')[0]) > todayStr && (Array.isArray(t.person) ? t.person.includes(u.name) : t.person === u.name)).sort((a,b) => (a.startDate||a.date).localeCompare(b.startDate||b.date))[0];
+            let futureHtml = upcoming ? `<small style="color:#e67e22; display:block; margin-top:5px;">📅 Sonraki: ${upcoming.startDate || upcoming.date} - ${upcoming.projectName}</small>` : '';
+            return `<div class="person-row"><div style="display:flex; align-items:center;"><div class="avatar" style="margin-right:10px;">${u.name.charAt(0)}</div><div><div style="font-weight:600;">${u.name}</div><small>${u.title||''}</small>${futureHtml}</div></div>${statusHtml}</div>`;
+        }).join('');
+    }
+
+    function updateStats(todayISO){
+        let activeSet = new Set();
+        tasks.forEach(t => {
+            const s = t.startDate || parseDateStr(t.date).toISOString().split('T')[0];
+            const e = t.endDate || parseDateStr(t.date).toISOString().split('T')[0];
+            if (todayISO >= s && todayISO <= e) {
+                if(Array.isArray(t.person)) t.person.forEach(p=>activeSet.add(p)); else activeSet.add(t.person);
+            }
+        });
+        document.getElementById('stat-total').innerText=users.length; 
+        document.getElementById('stat-active').innerText=activeSet.size; 
+        document.getElementById('stat-idle').innerText=Math.max(0,users.length-activeSet.size);
+    }
+
+    function loadDropdowns(){
+        if(document.getElementById('p-manager')) document.getElementById('p-manager').innerHTML=users.map(u=>`<option>${u.name}</option>`).join('');
+        if(document.getElementById('t-project-select')) document.getElementById('t-project-select').innerHTML=`<option value="">Seç</option>`+projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+        if(document.getElementById('c-person')) document.getElementById('c-person').innerHTML=users.map(u=>`<option value="${u.name}">${u.name}</option>`).join('');
+        const fillMulti=(id,arr,k)=>{const el=document.getElementById(id);if(el)el.innerHTML=arr.map(i=>`<div class="ms-item"><input type="checkbox" value="${i[k]}">${i[k]}</div>`).join('')};
+        fillMulti('ms-person',users,'name'); fillMulti('ms-device',devices,'name'); fillMulti('ms-plate',vehicles,'plate');
+    }
+    function getMultiSelectValues(id){return Array.from(document.querySelectorAll(`#${id} input:checked`)).map(i=>i.value);}
+    
+    const nav = document.querySelector('.bottom-nav');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    nav.addEventListener('mousedown', (e) => {
+        isDown = true;
+        nav.classList.add('active');
+        startX = e.pageX - nav.offsetLeft;
+        scrollLeft = nav.scrollLeft;
+    });
+    nav.addEventListener('mouseleave', () => {
+        isDown = false;
+        nav.classList.remove('active');
+    });
+    nav.addEventListener('mouseup', () => {
+        isDown = false;
+        nav.classList.remove('active');
+    });
+    nav.addEventListener('mousemove', (e) => {
+        if(!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - nav.offsetLeft;
+        const walk = (x - startX) * 2; 
+        nav.scrollLeft = scrollLeft - walk;
+    });
+
+    nav.addEventListener('wheel', (e) => {
+        if (e.deltaY !== 0) {
+            e.preventDefault();
+            nav.scrollLeft += e.deltaY;
+        }
+    });
+
+    window.switchTab = (tab) => { document.querySelectorAll('.view-section').forEach(e=>e.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active')); document.getElementById('view-'+tab).classList.add('active'); event.currentTarget.classList.add('active'); if(tab==='reports') filterReports(); }
+    window.changeMonth = (d) => { currentDate.setMonth(currentDate.getMonth()+d); renderCalendar(); }
+    window.toggleDatePicker = () => { document.getElementById('month-picker-modal').style.display = document.getElementById('month-picker-modal').style.display === 'block' ? 'none' : 'block'; pickerYear = currentDate.getFullYear(); document.getElementById('pick-year-val').innerText = pickerYear; }
+    window.changePickYear = (d) => { pickerYear += d; document.getElementById('pick-year-val').innerText = pickerYear; }
+    window.goToMonth = (m) => { currentDate.setFullYear(pickerYear); currentDate.setMonth(m); renderCalendar(); document.getElementById('month-picker-modal').style.display = 'none'; }
+    function getCurrentDateStr() { const d=new Date(); return `${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`; }
+    function parseDateStr(str) { if(!str) return new Date(); const parts = str.split('-'); return new Date(parts[2], parts[1], parts[0]); }
+    
+    function renderCalendar() {
         const grid = document.getElementById('calendarGrid'); 
         grid.innerHTML = `<div class="day-head">Pt</div><div class="day-head">Sa</div><div class="day-head">Ça</div><div class="day-head">Pe</div><div class="day-head">Cu</div><div class="day-head">Ct</div><div class="day-head">Pz</div>`;
-        const y = window.globalState.currentDate.getFullYear(), m = window.globalState.currentDate.getMonth();
+        const y = currentDate.getFullYear(), m = currentDate.getMonth();
         const names = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
         document.getElementById('monthDisplay').innerText = `${names[m]} ${y}`;
         const first = new Date(y, m, 1).getDay(), start = first===0?6:first-1, days = new Date(y, m+1, 0).getDate();
@@ -506,9 +1468,9 @@
             const offset = cellDate.getTimezoneOffset();
             const cellISO = new Date(cellDate.getTime() - (offset*60*1000)).toISOString().split('T')[0];
             let dots = "";
-            window.globalState.tasks.forEach(t => {
-                const s = t.startDate || window.parseDateStr(t.date).toISOString().split('T')[0];
-                const e = t.endDate || window.parseDateStr(t.date).toISOString().split('T')[0];
+            tasks.forEach(t => {
+                const s = t.startDate || parseDateStr(t.date).toISOString().split('T')[0];
+                const e = t.endDate || parseDateStr(t.date).toISOString().split('T')[0];
                 if (cellISO >= s && cellISO <= e) {
                     if(Array.isArray(t.person)) t.person.forEach(p => dots += `<span class="task-dot">${p}</span>`);
                     else dots += `<span class="task-dot">${t.person}</span>`;
@@ -519,267 +1481,49 @@
         }
     }
 
-    // Listeleri Render Etme
-    window.renderProjects = () => {
-        document.getElementById('projectListBody').innerHTML=window.globalState.projects.map(p=>{
-            const pf=p.offer-p.cost; 
-            return `<div style="padding:15px; border-bottom:1px solid #eee;"><strong>${p.name}</strong> (${p.start||'-'} / ${p.end||'?'})<br><small>${p.manager||'-'} | Kar: ${pf}</small> ${window.globalState.userRole==='admin' ? `<div style="float:right;"><button onclick="editProject('${p.id}')" style="border:none; bg:none; font-size:1.1rem;">✎</button><button onclick="deleteProject('${p.id}')" style="color:red; border:none; bg:none; font-size:1.1rem;">🗑</button></div>` : ''}</div>`;
-        }).join('');
-    }
-
-    window.renderVehicleList = () => {
-        const todayISO = new Date().toISOString().split('T')[0];
-        document.getElementById('vehicleListArea').innerHTML = window.globalState.vehicles.map(v => { 
-            let inspHtml = v.inspectionDate ? (new Date(v.inspectionDate) < new Date() ? `<small style="color:red; display:block;">⚠️ Muayene: ${v.inspectionDate}</small>` : `<small style="color:#666;">📅 Muayene: ${v.inspectionDate}</small>`) : ""; 
-            let statusBadge = `<span class="badge badge-green">BOŞTA</span>`;
-            let zimmetHtml = ""; 
-            if(v.currentHolder) { 
-                statusBadge = `<span class="badge badge-orange">👤 ${v.currentHolder}</span>`; 
-                if(window.globalState.userRole==='admin') zimmetHtml = `<button class="btn-sm btn-outline-red" onclick="returnItem('vehicle','${v.id}')">İade Al</button>`; 
-            } else if(window.globalState.userRole==='admin') { 
-                zimmetHtml = `<button class="btn-sm btn-outline-blue" onclick="openCustodyModal('vehicle','${v.id}','${v.plate}','${v.info || ''}')">Zimmetle</button>`; 
-            } 
-            const at = window.globalState.tasks.find(t => {
-                const s = t.startDate || window.parseDateStr(t.date).toISOString().split('T')[0];
-                const e = t.endDate || window.parseDateStr(t.date).toISOString().split('T')[0];
-                const inRange = todayISO >= s && todayISO <= e;
-                const hasPlate = Array.isArray(t.plate) ? t.plate.includes(v.plate) : t.plate === v.plate;
-                return inRange && hasPlate;
-            });
-            if(at) statusBadge += ` <span class="badge badge-red" style="margin-left:5px">GÖREVDE</span>`;
-            return `<div class="info-card ${v.currentHolder?'custody':'active'}"><div class="info-card-header"><div><strong>${v.plate}</strong><br><small>${v.info || ''}</small>${inspHtml}</div>${window.globalState.userRole==='admin' ? `<div><button onclick="editVehicle('${v.id}')" style="border:none; bg:none; font-size:1.1rem;">✎</button><button onclick="deleteVehicle('${v.id}')" style="color:red; border:none; bg:none; font-size:1.1rem;">🗑</button></div>` : ''}</div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">${statusBadge}${zimmetHtml}</div></div>`; 
-        }).join('');
-    }
-
-    window.renderDeviceList = () => {
-        const todayISO = new Date().toISOString().split('T')[0];
-        document.getElementById('deviceListArea').innerHTML = window.globalState.devices.map(d => { 
-            let statusBadge = `<span class="badge badge-green">BOŞTA</span>`, zimmetHtml = ""; 
-            if(d.currentHolder) { 
-                statusBadge = `<span class="badge badge-orange">👤 ${d.currentHolder}</span>`; 
-                if(window.globalState.userRole==='admin') zimmetHtml = `<button class="btn-sm btn-outline-red" onclick="returnItem('device','${d.id}')">İade Al</button>`; 
-            } else if(window.globalState.userRole==='admin') { 
-                zimmetHtml = `<button class="btn-sm btn-outline-blue" onclick="openCustodyModal('device','${d.id}','${d.name}', '${d.serial || ''}')">Zimmetle</button>`; 
-            } 
-            const at = window.globalState.tasks.find(t => {
-                const s = t.startDate || window.parseDateStr(t.date).toISOString().split('T')[0];
-                const e = t.endDate || window.parseDateStr(t.date).toISOString().split('T')[0];
-                const inRange = todayISO >= s && todayISO <= e;
-                const hasDev = Array.isArray(t.device) ? t.device.includes(d.name) : t.device === d.name;
-                return inRange && hasDev;
-            });
-            if(at) statusBadge += ` <span class="badge badge-red" style="margin-left:5px">GÖREVDE</span>`; 
-            let calibHtml = d.calib ? `<br><small style="color:${new Date(d.calib) < new Date() ? 'red' : '#666'}">Kalibrasyon: ${d.calib}</small>` : ""; 
-            let pdfButton = "";
-            if (d.pdfUrl) { pdfButton = `<a href="${d.pdfUrl}" target="_blank" style="text-decoration:none; margin-left:10px; font-size:0.8rem; background:#3498db; color:white; padding:3px 8px; border-radius:5px;">📄 İndir</a>`; } 
-            else { pdfButton = `<small style="color:#aaa; margin-left:10px;">(Dosya Yok)</small>`; }
-            return `<div class="info-card ${d.currentHolder?'custody':'active'}"><div class="info-card-header"><div><strong>${d.name}</strong> <small>(${d.serial || '-'})</small> ${pdfButton} ${calibHtml}</div>${window.globalState.userRole==='admin' ? `<div><button onclick="editDevice('${d.id}')" style="border:none; bg:none; font-size:1.1rem;">✎</button><button onclick="deleteDevice('${d.id}')" style="color:red; border:none; bg:none; font-size:1.1rem;">🗑</button></div>` : ''}</div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">${statusBadge}${zimmetHtml}</div></div>`; 
-        }).join('');
-    }
-
-    // Yardımcı UI Güncellemeleri
-    window.updateStats = (todayISO) => {
-        let activeSet = new Set();
-        window.globalState.tasks.forEach(t => {
-            const s = t.startDate || window.parseDateStr(t.date).toISOString().split('T')[0];
-            const e = t.endDate || window.parseDateStr(t.date).toISOString().split('T')[0];
-            if (todayISO >= s && todayISO <= e) {
-                if(Array.isArray(t.person)) t.person.forEach(p=>activeSet.add(p)); else activeSet.add(t.person);
-            }
-        });
-        document.getElementById('stat-total').innerText=window.globalState.users.length; 
-        document.getElementById('stat-active').innerText=activeSet.size; 
-        document.getElementById('stat-idle').innerText=Math.max(0,window.globalState.users.length-activeSet.size);
-    }
-
-    window.loadDropdowns = () => {
-        if(document.getElementById('p-manager')) document.getElementById('p-manager').innerHTML=window.globalState.users.map(u=>`<option>${u.name}</option>`).join('');
-        if(document.getElementById('t-project-select')) document.getElementById('t-project-select').innerHTML=`<option value="">Seç</option>`+window.globalState.projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
-        if(document.getElementById('c-person')) document.getElementById('c-person').innerHTML=window.globalState.users.map(u=>`<option value="${u.name}">${u.name}</option>`).join('');
-        const fillMulti=(id,arr,k)=>{const el=document.getElementById(id);if(el)el.innerHTML=arr.map(i=>`<div class="ms-item"><input type="checkbox" value="${i[k]}">${i[k]}</div>`).join('')};
-        fillMulti('ms-person',window.globalState.users,'name'); fillMulti('ms-device',window.globalState.devices,'name'); fillMulti('ms-plate',window.globalState.vehicles,'plate');
-    }
-    
-    // Modal Aç/Kapa
     window.openModal = (isoDate) => { 
-        window.globalState.selectedDateStr = isoDate; 
+        selectedDateStr = isoDate; 
         document.getElementById('modalDateText').innerText = isoDate.split('-').reverse().join('.'); 
-        if(!window.globalState.editingTaskId) {
-           document.getElementById('t-start-date').value = isoDate;
-           document.getElementById('t-end-date').value = isoDate;
-       }
-       window.openModalLogic(isoDate); 
-       document.querySelector('#taskModal').style.display = 'flex'; 
+        if(!editingTaskId) {
+            document.getElementById('t-start-date').value = isoDate;
+            document.getElementById('t-end-date').value = isoDate;
+        }
+        openModalLogic(isoDate); 
+        document.querySelector('#taskModal').style.display = 'flex'; 
     }
-    window.closeModal = () => { document.querySelector('#taskModal').style.display = 'none'; window.cancelTaskEdit(); }
+    window.closeModal = () => {
+        document.querySelector('#taskModal').style.display = 'none';
+        cancelTaskEdit(); 
+    }
     
-    window.openModalLogic = (isoDate) => {
-        const dt = window.globalState.tasks.filter(t => {
-            const s = t.startDate || window.parseDateStr(t.date).toISOString().split('T')[0];
-            const e = t.endDate || window.parseDateStr(t.date).toISOString().split('T')[0];
+    function openModalLogic(isoDate) {
+        const dt = tasks.filter(t => {
+            const s = t.startDate || parseDateStr(t.date).toISOString().split('T')[0];
+            const e = t.endDate || parseDateStr(t.date).toISOString().split('T')[0];
             return isoDate >= s && isoDate <= e;
         });
+
         document.getElementById('dayTaskList').innerHTML = dt.length ? dt.map(t => {
             const pStr = Array.isArray(t.person) ? t.person.join(", ") : t.person;
             const rangeStr = (t.startDate && t.endDate) ? `<br><small>📅 ${t.startDate.split('-').reverse().join('.')} - ${t.endDate.split('-').reverse().join('.')}</small>` : '';
-            return `<div style="padding:10px; background:#f9f9f9; border-radius:8px; margin-bottom:5px; border-left:4px solid #764ba2;">
-                <strong>${pStr}</strong><br>📍 ${t.projectName} ${rangeStr}
-                ${window.globalState.userRole==='admin' ? `<div style="float:right;"><button onclick="editTask('${t.id}')" style="border:none; background:none; font-size:1.1rem; margin-right:5px; cursor:pointer;" title="Düzenle">✎</button><button onclick="delTask('${t.id}')" style="color:red; border:none; background:none; font-size:1.1rem; cursor:pointer;" title="Sil">🗑</button></div>` : ''}
+            return `
+            <div style="padding:10px; background:#f9f9f9; border-radius:8px; margin-bottom:5px; border-left:4px solid #764ba2;">
+                <strong>${pStr}</strong><br>
+                📍 ${t.projectName} ${rangeStr}
+                ${userRole==='admin' ? `
+                <div style="float:right;">
+                    <button onclick="editTask('${t.id}')" style="border:none; background:none; font-size:1.1rem; margin-right:5px; cursor:pointer;" title="Düzenle">✎</button>
+                    <button onclick="delTask('${t.id}')" style="color:red; border:none; background:none; font-size:1.1rem; cursor:pointer;" title="Sil">🗑</button>
+                </div>
+                ` : ''}
             </div>`;
         }).join('') : 'Bu tarihte görev yok.';
     }
 </script>
 
-<script type="module">
-    // Araç İşlemleri
-    window.addVehicle = async () => {
-        const p=document.getElementById('v-plate').value; if(!p)return; 
-        await window.fs.addDoc(window.fs.collection(window.db,"vehicles"),{plate:p,info:document.getElementById('v-info').value,inspectionDate:document.getElementById('v-inspection').value,currentHolder:null}); 
-        window.showToast("Araç Eklendi"); window.resetVehicleForm();
-    }
-    window.updateVehicleDB = async () => {
-        await window.fs.updateDoc(window.fs.doc(window.db,"vehicles",window.globalState.editingVehicleId),{plate:document.getElementById('v-plate').value,info:document.getElementById('v-info').value,inspectionDate:document.getElementById('v-inspection').value}); 
-        window.showToast("Araç Güncellendi"); window.resetVehicleForm();
-    }
-    window.editVehicle=(id)=>{
-        const v=window.globalState.vehicles.find(x=>x.id===id); if(!v)return; 
-        document.getElementById('v-plate').value=v.plate; document.getElementById('v-info').value=v.info; document.getElementById('v-inspection').value=v.inspectionDate||""; 
-        window.globalState.editingVehicleId=id; document.getElementById('vehicleFormTitle').innerText="Düzenle"; document.getElementById('btn-v-save').style.display='none'; document.getElementById('btn-v-update').style.display='block'; document.getElementById('btn-v-cancel').style.display='block';
-    }
-    window.cancelVehicleEdit = () => { window.resetVehicleForm(); }
-    window.resetVehicleForm = () => {
-        window.globalState.editingVehicleId=null; document.getElementById('v-plate').value=""; document.getElementById('v-info').value=""; document.getElementById('v-inspection').value=""; 
-        document.getElementById('vehicleFormTitle').innerText="Yeni Araç Ekle"; document.getElementById('btn-v-save').style.display='block'; document.getElementById('btn-v-update').style.display='none'; document.getElementById('btn-v-cancel').style.display='none';
-    }
-    window.deleteVehicle = async (id) => { if(confirm("Sil?")) { await window.fs.deleteDoc(window.fs.doc(window.db,"vehicles",id)); window.showToast("Silindi"); }}
 
-    // Cihaz İşlemleri
-    window.uploadPDF = async (file) => {
-        if (!file) return null;
-        try {
-            const fName = new Date().getTime() + '_' + file.name;
-            const storageRef = window.fbStorage.ref(window.storage, 'calibration_docs/' + fName);
-            await window.fbStorage.uploadBytes(storageRef, file);
-            return await window.fbStorage.getDownloadURL(storageRef); 
-        } catch (e) {
-            console.error("Yükleme hatası:", e); alert("Dosya yüklenirken hata oluştu!"); return null;
-        }
-    }
-    window.addDevice = async () => {
-        const n = document.getElementById('d-name').value;
-        const fileInput = document.getElementById('d-file').files[0];
-        if (!n) return window.showToast("Cihaz adı zorunlu", "error");
-        const btn = document.getElementById('btn-d-save'); btn.innerText = "Yükleniyor..."; btn.disabled = true;
-        let pdfUrl = null;
-        if (fileInput) { pdfUrl = await window.uploadPDF(fileInput); }
-        await window.fs.addDoc(window.fs.collection(window.db, "devices"), {
-            name: n, serial: document.getElementById('d-serial').value, calib: document.getElementById('d-calib').value, pdfUrl: pdfUrl, currentHolder: null
-        });
-        window.showToast("Cihaz Eklendi"); document.getElementById('d-name').value = ""; document.getElementById('d-serial').value = ""; document.getElementById('d-calib').value = ""; document.getElementById('d-file').value = ""; btn.innerText = "Ekle"; btn.disabled = false;
-    }
-    // (Cihaz güncelleme ve silme fonksiyonları benzer şekilde buraya eklenir, yer darlığı sebebiyle kısaltıyorum)
 
-    // Görev ve Zimmet
-    window.saveTask = async () => {
-        const btn = document.getElementById('btn-save-task'); btn.disabled = true; 
-        try {
-            // Checkbox değerlerini al
-            const getVals = (id) => Array.from(document.querySelectorAll(`#${id} input:checked`)).map(i=>i.value);
-            const per = getVals('ms-person'), dev = getVals('ms-device'), plate = getVals('ms-plate');
-            const projVal = document.getElementById('t-project-select').value;
-            const sDate = document.getElementById('t-start-date').value;
-            const eDate = document.getElementById('t-end-date').value;
-            const loc = document.getElementById('t-loc').value;
-
-            if(!projVal || per.length===0 || !sDate || !eDate) { window.showToast("Eksik bilgi!", "error"); btn.disabled = false; return; }
-            
-            // Veritabanına kaydet
-            const projName = document.getElementById('t-project-select').options[document.getElementById('t-project-select').selectedIndex].text;
-            const taskData = { startDate: sDate, endDate: eDate, person: per, projectName: projName, projectId: projVal, location: loc, device: dev, plate: plate };
-            
-            if (window.globalState.editingTaskId) {
-                await window.fs.updateDoc(window.fs.doc(window.db, "tasks", window.globalState.editingTaskId), taskData);
-                window.showToast("Görev güncellendi!", "success"); window.cancelTaskEdit(); 
-            } else {
-                await window.fs.addDoc(window.fs.collection(window.db, "tasks"), taskData);
-                window.showToast("Görev atandı!", "success");
-            }
-        } catch (error) { console.error(error); window.showToast("Hata: " + error.message, "error"); } finally { btn.disabled = false; }
-    }
-</script>
-
-<script type="module">
-    // Kimlik Doğrulama Dinleyicisi
-    window.fbAuth.onAuthStateChanged(window.auth, async (user) => {
-        if (user) {
-            const userDoc = await window.fs.getDoc(window.fs.doc(window.db, "users", user.email));
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-                window.globalState.currentUser = userData; 
-                window.globalState.userRole = userData.role;
-                
-                document.getElementById('welcomeUser').innerText = userData.name.split(' ')[0];
-                document.getElementById('profileName').innerText = userData.name;
-                document.getElementById('profileRole').innerText = userData.title || (userData.role === 'admin' ? 'Yönetici' : 'Personel');
-                document.getElementById('profileAvatar').innerText = userData.name.charAt(0);
-                
-                // Yetkilendirme
-                document.querySelectorAll('.admin-only').forEach(el => el.style.display = (userData.role === 'admin') ? 'block' : 'none');
-                document.querySelectorAll('.nav-item.admin-only').forEach(el => el.style.display = (userData.role === 'admin') ? 'flex' : 'none');
-                
-                startListeners();
-            } else {
-                alert("Kullanıcı kaydı yok."); window.fbAuth.signOut(window.auth).then(()=> window.location.href="login.html");
-            }
-        } else {
-            window.location.href = "login.html";
-        }
-    });
-
-    function startListeners() {
-        // Araçlar
-        window.fs.onSnapshot(window.fs.collection(window.db, "vehicles"), (s) => { 
-            window.globalState.vehicles=[]; s.docs.forEach(d=>window.globalState.vehicles.push({id:d.id, ...d.data()})); 
-            window.renderVehicleList(); window.loadDropdowns(); 
-        });
-        // Projeler
-        window.fs.onSnapshot(window.fs.collection(window.db, "projects"), (s) => { 
-            window.globalState.projects=[]; s.docs.forEach(d=>window.globalState.projects.push({id:d.id, ...d.data()})); 
-            window.renderProjects(); window.loadDropdowns(); 
-        });
-        // Kullanıcılar
-        window.fs.onSnapshot(window.fs.collection(window.db, "users"), (s) => { 
-            window.globalState.users=[]; s.docs.forEach(d=>window.globalState.users.push(d.data())); 
-            // Kullanıcı listesi render fonksiyonu buraya
-            window.loadDropdowns(); 
-        });
-        // Görevler
-        window.fs.onSnapshot(window.fs.collection(window.db, "tasks"), (snapshot) => {
-            window.globalState.tasks=[]; snapshot.docs.forEach(d=>window.globalState.tasks.push({id:d.id, ...d.data()}));
-            window.renderCalendar();
-            window.updateStats(new Date().toISOString().split('T')[0]); 
-            window.renderDeviceList(); 
-            window.renderVehicleList(); 
-        });
-        // Cihazlar
-        window.fs.onSnapshot(window.fs.collection(window.db, "devices"), (s) => {
-            window.globalState.devices=[]; s.docs.forEach(d=>window.globalState.devices.push({id:d.id, ...d.data()}));
-            window.renderDeviceList(); window.loadDropdowns();
-        });
-    }
-    
-    // Tab Değiştirme
-    window.switchTab = (tab) => { 
-        document.querySelectorAll('.view-section').forEach(e=>e.classList.remove('active')); 
-        document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active')); 
-        document.getElementById('view-'+tab).classList.add('active'); 
-        event.currentTarget.classList.add('active'); 
-    }
-    
-    // Çıkış
-    window.handleLogout = () => { window.fbAuth.signOut(window.auth).then(() => { window.location.href = "login.html"; }); };
-</script>
-
+<!-- live -->
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
@@ -791,6 +1535,7 @@
     });
   }
 </script>
+<!-- live -->
 
 </body>
 </html>
