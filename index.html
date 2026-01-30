@@ -621,6 +621,8 @@
                 logs = [];
                 s.docs.forEach(d => logs.push(d.data()));
                 filterReports();
+                // Varsayılan olarak logları listele (tarih seçili olmasa bile)
+                renderAdminLogs(document.getElementById('adminLogDate').value);
             });
 
             onSnapshot(collection(db, "tasks"), (snapshot) => {
@@ -880,22 +882,40 @@
             }
         }
 
+        // --- GÜNCELLENEN KISIM: renderLeaves (Hem Yıl Hem Ay Filtrelemesi Yapar) ---
         function renderLeaves() {
             const currentYear = document.getElementById('pdfYear').value || new Date().getFullYear().toString();
+            const currentMonth = document.getElementById('pdfMonth').value;
+
+            // Filtreleme için hedef string'i hazırla (Örn: "2025-05")
+            const targetPrefix = currentMonth === 'all' ? currentYear : `${currentYear}-${currentMonth}`;
 
             // --- 1. TÜM PERSONEL ÖZETİ ---
             const summaryStats = {};
 
             leaves.forEach(l => {
-                if (l.status === 'Onaylandı' && l.startDate.startsWith(currentYear)) {
-                    if (!summaryStats[l.userName]) summaryStats[l.userName] = 0;
-                    summaryStats[l.userName] += l.days;
+                if (l.status === 'Onaylandı') {
+                    let isMatch = false;
+                    if(currentMonth === 'all') {
+                        // Eğer "Tüm Yıl" seçiliyse sadece yıla bak
+                        isMatch = l.startDate.startsWith(currentYear);
+                    } else {
+                        // Eğer belirli bir ay seçiliyse, o ayda BAŞLAYAN veya BİTEN izinleri bul
+                        isMatch = l.startDate.startsWith(targetPrefix) || l.endDate.startsWith(targetPrefix);
+                    }
+
+                    if (isMatch) {
+                        if (!summaryStats[l.userName]) summaryStats[l.userName] = 0;
+                        summaryStats[l.userName] += l.days;
+                    }
                 }
             });
 
             let summaryHtml = "";
+            let timeLabel = currentMonth === 'all' ? `${currentYear} Yılı` : `${currentMonth}/${currentYear}`;
+
             if (Object.keys(summaryStats).length === 0) {
-                summaryHtml = `<div style="text-align:center; padding:10px; color:#999;">${currentYear} yılında onaylı izin kaydı yok.</div>`;
+                summaryHtml = `<div style="text-align:center; padding:10px; color:#999;">${timeLabel} için onaylı izin kaydı yok.</div>`;
             } else {
                 summaryHtml = `<table style="width:100%; font-size:0.9rem; border-collapse:collapse;">
                 <tr style="background:#f0f0f0;"><th style="padding:5px; text-align:left;">Personel</th><th style="padding:5px; text-align:right;">Toplam (Gün)</th></tr>`;
@@ -908,7 +928,18 @@
 
             // --- 2. LİSTELEME ---
             const listArea = document.getElementById('leaveListArea');
-            let displayLeaves = userRole === 'admin' ? leaves : leaves.filter(l => l.userId === currentUser.email);
+            
+            // Önce Kullanıcı Rolüne Göre Filtrele
+            let userFilteredLeaves = userRole === 'admin' ? leaves : leaves.filter(l => l.userId === currentUser.email);
+            
+            // Sonra Seçilen Yıl/Ay'a Göre Filtrele
+            let displayLeaves = userFilteredLeaves.filter(l => {
+                 if(currentMonth === 'all') {
+                     return l.startDate.startsWith(currentYear);
+                 } else {
+                     return l.startDate.startsWith(targetPrefix) || l.endDate.startsWith(targetPrefix);
+                 }
+            });
 
             if (displayLeaves.length === 0) {
                 listArea.innerHTML = "<div style='color:#999; text-align:center; padding:20px;'>İzin talebi bulunmuyor.</div>";
@@ -1021,7 +1052,9 @@
             doc.save(`Izin_Raporu_${mode}_${year}.pdf`);
         }
 
+        // --- EVENT LISTENERS GÜNCELLENDİ: Hem Yıl hem Ay değişince liste yenilenir ---
         document.getElementById('pdfYear').addEventListener('change', renderLeaves);
+        document.getElementById('pdfMonth').addEventListener('change', renderLeaves);
 
         window.deleteLeave = async (id) => {
             if (confirm("Bu izin kaydını silmek istiyor musunuz?")) {
@@ -1054,23 +1087,35 @@
             }
         }
 
+        // --- GÜNCELLENEN KISIM: renderAdminLogs (Varsayılan olarak listeler) ---
         window.renderAdminLogs = (dateVal) => {
             const tbody = document.getElementById('adminLogBody');
-            if (!dateVal) {
-                tbody.innerHTML = '<tr><td colspan="4">Tarih seçiniz.</td></tr>';
-                return;
+            
+            // Eğer tarih seçili değilse, varsayılan olarak tüm (son 500) logları listele
+            let sourceLogs = logs;
+            
+            // Eğer tarih seçildiyse filtrele
+            if (dateVal) {
+                sourceLogs = logs.filter(l => l.date.startsWith(dateVal));
             }
 
-            const filtered = logs.filter(l => l.date.startsWith(dateVal));
-            if (filtered.length === 0) {
+            if (sourceLogs.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4">Kayıt yok.</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = filtered.map(l => {
+            tbody.innerHTML = sourceLogs.map(l => {
                 const d = new Date(l.date);
-                const time = `${d.getHours()}:${d.getMinutes()}`;
-                return `<tr><td>${time}</td><td>${l.admin || 'Sistem'}</td><td>${l.action}</td><td>${l.person} - ${l.item}</td></tr>`;
+                const time = `${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
+                // Tarih de ekleyelim ki karışmasın
+                const dateStr = `${d.getDate()}.${d.getMonth()+1}.${d.getFullYear()}`;
+                
+                return `<tr>
+                    <td>${dateStr} ${time}</td>
+                    <td>${l.admin || 'Sistem'}</td>
+                    <td>${l.action}</td>
+                    <td>${l.person} - ${l.item}</td>
+                </tr>`;
             }).join('');
         }
 

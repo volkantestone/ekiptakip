@@ -223,6 +223,26 @@
             btn.innerText = "Kayıt Ol";
         }
     }
+	
+	
+	// Sayfa yüklendiğinde "Enter" tuşunu dinle
+document.addEventListener('keydown', (event) => {
+    // Eğer basılan tuş Enter ise ve şu an bir modal açık değilse giriş yap
+    if (event.key === 'Enter') {
+        // Hangi modalın açık olduğunu kontrol et
+        const isForgotOpen = document.getElementById('forgotModal').style.display === 'flex';
+        const isRegisterOpen = document.getElementById('registerModal').style.display === 'flex';
+
+        if (isForgotOpen) {
+            handleResetPassword();
+        } else if (isRegisterOpen) {
+            handleRegister();
+        } else {
+            handleLogin();
+        }
+    }
+});
+	
 </script>
 </body>
 </html>
