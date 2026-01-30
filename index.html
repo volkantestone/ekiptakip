@@ -295,16 +295,19 @@
         <div id="view-leaves" class="view-section">
             <div class="modern-card">
                 <h3>Personel İzin Durumu & Rapor</h3>
-                <div class="report-controls">
-                    <select id="pdfYear" style="flex:1;"><option value="2025">2025</option><option value="2024">2024</option></select>
-                    <select id="pdfMonth" style="flex:1;">
-                        <option value="all">Tüm Yıl</option>
-                        <option value="01">Ocak</option><option value="02">Şubat</option><option value="03">Mart</option>
-                        <option value="04">Nisan</option><option value="05">Mayıs</option><option value="06">Haziran</option>
-                        <option value="07">Temmuz</option><option value="08">Ağustos</option><option value="09">Eylül</option>
-                        <option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option>
-                    </select>
-                </div>
+<div class="report-controls">
+    <select id="pdfYear" style="flex:1;" onchange="renderLeaves()"></select>
+    
+    <select id="pdfMonth" style="flex:1;">
+        <option value="all">Tüm Yıl</option>
+        <option value="01">Ocak</option><option value="02">Şubat</option>
+        <option value="03">Mart</option><option value="04">Nisan</option>
+        <option value="05">Mayıs</option><option value="06">Haziran</option>
+        <option value="07">Temmuz</option><option value="08">Ağustos</option>
+        <option value="09">Eylül</option><option value="10">Ekim</option>
+        <option value="11">Kasım</option><option value="12">Aralık</option>
+    </select>
+</div>
                 <div style="display:flex; gap:5px; margin-bottom:15px;">
                     <button onclick="downloadLeavePDF('year')" class="btn-sm" style="flex:1; background:#764ba2; color:white;">📂 Yıllık PDF</button>
                     <button onclick="downloadLeavePDF('month')" class="btn-sm" style="flex:1; background:#667eea; color:white;">📄 Aylık PDF</button>
@@ -558,7 +561,65 @@
         }
     }
 
-    // --- YENİ: GERİ BİLDİRİM FONKSİYONLARI ---
+    
+	// 1. Yıl Listesini Dinamik Doldur (2024 - 2026+)
+function setupLeaveYearDropdown() {
+    const yearSelect = document.getElementById('pdfYear');
+    const currentYear = new Date().getFullYear(); // 2026
+    yearSelect.innerHTML = "";
+    for (let y = 2024; y <= currentYear; y++) {
+        let opt = document.createElement('option');
+        opt.value = y;
+        opt.textContent = y;
+        if (y === currentYear) opt.selected = true;
+        yearSelect.appendChild(opt);
+    }
+}
+
+// 2. renderLeaves Fonksiyonunu Güncelle (Tüm Kullanıcıları Kapsar)
+function renderLeaves() {
+    const selectedYear = document.getElementById('pdfYear').value;
+    const summaryStats = {};
+    
+    // Tüm personelin onaylı izinlerini hesapla
+    leaves.forEach(l => {
+        if(l.status === 'Onaylandı' && l.startDate.startsWith(selectedYear)) {
+            if(!summaryStats[l.userName]) summaryStats[l.userName] = 0;
+            summaryStats[l.userName] += parseInt(l.days);
+        }
+    });
+
+    let summaryHtml = `<h4>${selectedYear} Yılı Personel İzin Özeti</h4>`;
+    if(Object.keys(summaryStats).length === 0) {
+        summaryHtml += `<p style="text-align:center; color:#888; padding:10px;">${selectedYear} yılında kayıtlı onaylı izin bulunamadı.</p>`;
+    } else {
+        summaryHtml += `<table style="width:100%; font-size:0.9rem; border-collapse:collapse;">
+            <tr style="background:#f4f6f8; border-bottom:2px solid #eee;">
+                <th style="padding:10px; text-align:left;">Personel Adı</th>
+                <th style="padding:10px; text-align:right;">Toplam İzin (Gün)</th>
+            </tr>`;
+        for (const [name, days] of Object.entries(summaryStats)) {
+            summaryHtml += `
+            <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:10px;">${name}</td>
+                <td style="padding:10px; text-align:right; font-weight:bold; color:#764ba2;">${days} Gün</td>
+            </tr>`;
+        }
+        summaryHtml += `</table>`;
+    }
+    document.getElementById('allUserLeavesStats').innerHTML = summaryHtml;
+
+    // Alt kısımdaki "İzin Geçmişi" listesini de render et (Filtresiz/Kişisel)
+    renderLeaveHistoryList();
+}
+
+// Sayfa yüklendiğinde yıl seçimini hazırla
+setupLeaveYearDropdown();
+	
+	
+	
+	
+	// --- YENİ: GERİ BİLDİRİM FONKSİYONLARI ---
     window.openFeedbackModal = () => document.getElementById('feedbackModal').style.display = 'flex';
     window.closeFeedbackModal = () => document.getElementById('feedbackModal').style.display = 'none';
     
